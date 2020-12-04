@@ -6,7 +6,7 @@ type avlnode<a> {
     con Branch ( l: avlnode<a>, x: a, r: avlnode<a>, k: int )
 } 
 
-fun min ( tree: avlnode<a> ) : maybe<a> {
+private fun min ( tree: avlnode<a> ) : maybe<a> {
     match ( tree ) {
         Empty -> Nothing
         Branch ( Empty, x, _, _ ) -> Just ( x )
@@ -14,7 +14,7 @@ fun min ( tree: avlnode<a> ) : maybe<a> {
     }
 }
 
-fun balance ( target: ( avlnode<a>, int ) ) : ( avlnode<a>, int ) {
+private fun balance ( target: ( avlnode<a>, int ) ) : ( avlnode<a>, int ) {
     match ( target ) {
 
         ( Branch ( Branch ( Branch ( a, x, b, dx ), y, c, -1 ), z, d, -2 ), dh ) ->
@@ -45,7 +45,7 @@ fun balance ( target: ( avlnode<a>, int ) ) : ( avlnode<a>, int ) {
     }
 } 
 
-fun delta-height(d: int, d': int, dl: int, dr: int) : int {
+private fun delta-height(d: int, d': int, dl: int, dr: int) : int {
     if ( d >= 0 && d' >= 0 )
     then dr
     elif ( d <= 0 && d' >= 0 )
@@ -55,7 +55,7 @@ fun delta-height(d: int, d': int, dl: int, dr: int) : int {
     else dl
 }
 
-fun node ( p: (avlnode<a>, int), ele: a, p' : (avlnode<a>, int), d: int) : (avlnode<a>, int) {
+private fun node ( p: (avlnode<a>, int), ele: a, p' : (avlnode<a>, int), d: int) : (avlnode<a>, int) {
     val d' = d + p'.snd - p.snd
     balance ((
         Branch ( p.fst, ele, p'.fst, d' ),
@@ -63,7 +63,7 @@ fun node ( p: (avlnode<a>, int), ele: a, p' : (avlnode<a>, int), d: int) : (avln
     ))
 }
 
-fun ins ( t: avlnode<a>, x: a, compare: (a, a) -> order ) : ( avlnode<a>, int ) {
+private fun ins ( t: avlnode<a>, x: a, compare: (a, a) -> order ) : ( avlnode<a>, int ) {
     match ( t ) {
         Empty -> ( Branch ( Empty, x, Empty, 0 ), 1 )
         Branch ( l, k, r, d ) ->
@@ -75,7 +75,7 @@ fun ins ( t: avlnode<a>, x: a, compare: (a, a) -> order ) : ( avlnode<a>, int ) 
     }
 }
 
-fun del ( t: avlnode<a>, x: a, compare: (a, a) -> order ) : ( avlnode<a>, int) {
+private fun del ( t: avlnode<a>, x: a, compare: (a, a) -> order ) : ( avlnode<a>, int) {
     match ( t ) {
         Empty ->  ( Empty, 0 )
         Branch ( l, k, r, d ) ->
@@ -92,8 +92,20 @@ fun del ( t: avlnode<a>, x: a, compare: (a, a) -> order ) : ( avlnode<a>, int) {
             }
     }
 }
+
+private fun contains ( t: avlnode<a>, x: a, compare: (a, a) -> order ) : bool {
+    match ( t ) {
+        Empty -> False
+        Branch ( l, k, r, _ ) -> 
+            match ( compare ( x, k ) ) {
+                Eq -> True
+                Lt -> l.contains(x, compare)
+                Gt -> r.contains(x, compare)
+            }
+    }
+}
  
-type avltree <a> {
+pub type avltree <a> {
     con AVLTree( root: avlnode<a> , compare: (a, a) -> order )
 }
 
@@ -111,4 +123,8 @@ pub fun delete ( t: avltree<a>, x: a ) : avltree<a> {
 
 pub fun min ( t: avltree<a> ) : maybe<a> {
     t.root.min
+}
+
+pub fun contains ( t: avltree<a>, x: a ) : bool {
+    t.root.contains(x, t.compare)
 }

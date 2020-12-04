@@ -1,7 +1,7 @@
 public module collections/rtqueue
 import std/core/types;
 
-type state<a> {
+private type state<a> {
     con Empty
     con Reverse(n: int, xs: list<a>, fs: list<a>, ys: list<a>, rs: list<a>)
     con Concat(n: int, xs: list<a>, ys: list<a>)
@@ -18,7 +18,7 @@ pub type rtqueue<a>  {
     )
 }
 
-fun next(state: state<a>) : total state<a> {
+private fun next(state: state<a>) : total state<a> {
     match (state) {
         Reverse(n, Cons(x, xs), f, Cons(y, ys), r)  ->
             Reverse(n + 1, xs, Cons(x, f),  ys, Cons(y, r))
@@ -32,7 +32,7 @@ fun next(state: state<a>) : total state<a> {
     }
 }
 
-fun abort(state: state<a>) : total state<a> {
+private fun abort(state: state<a>) : total state<a> {
     match (state) {
         Concat(0, _, Cons(_, xs)) ->
             Done(xs)
@@ -44,7 +44,7 @@ fun abort(state: state<a>) : total state<a> {
     }
 }
 
-fun step(f : list<a>, f_size: int, s: state<a>, r: list<a>, r_size: int) : total rtqueue<a> {
+private fun step(f : list<a>, f_size: int, s: state<a>, r: list<a>, r_size: int) : total rtqueue<a> {
     match (
         if   ( f.is-empty  )
         then { s.next.next }
@@ -55,7 +55,7 @@ fun step(f : list<a>, f_size: int, s: state<a>, r: list<a>, r_size: int) : total
     }
 }
 
-fun balance(f : list<a>, f_size: int, s: state<a>, r: list<a>, r_size: int) : total rtqueue<a> {
+private fun balance(f : list<a>, f_size: int, s: state<a>, r: list<a>, r_size: int) : total rtqueue<a> {
     if (r_size <= f_size)
     then { step(f, f_size, s, r, r_size) }
     else { step(f, f_size + r_size, Reverse(0, f, Nil, r, Nil), Nil, 0) }

@@ -48,13 +48,20 @@ fun main() {
         .push_serial(1, 100)
         .pop_to_list(Nil);
     val b = create-list(1, 100, Nil)
+    var flag := True
     if ( !list-eq( a, b )) {
         println(a.show)
         println(b.show)
+        flag := False
     }
     val (x, y) = create-random(20000, Nil, rtqueue/new())
     if ( !list-eq( x, y ) ) {
         println(x.show)
         println(y.show)
+        flag := False
     }
+    if (flag)
+    then println("success")
+    else println("false")
 }
+

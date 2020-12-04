@@ -1,3 +1,4 @@
+public module collections/avltree;
 import std/core/types;
 
 type avltree<a> {
@@ -33,6 +34,5 @@ fun balance ( target: ( avltree<a>, int ) ) : ( avltree<a>, int ) {
         _ -> target
     }
 } 
-
 
 

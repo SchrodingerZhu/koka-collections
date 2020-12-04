@@ -49,7 +49,7 @@ if __name__ == "__main__":
     setup_logger(log)
 
     log.info("Detecting Koka Version")
-    version = run(["koka", "--version"], stdout=PIPE, text=True).stdout.split()[1]
+    version = run(["koka", "--version"], stdout=PIPE, text=True).stdout.split()[1].strip(",")
     log.info("Version {}".format(version))
     log.info("Compiling Test Cases")
     success = True

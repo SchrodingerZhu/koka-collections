@@ -8,7 +8,7 @@ type state<a> {
     con Done(xs: list<a>)
 }
 
-type rtqueue<a>  {
+pub type rtqueue<a>  {
     con RTQueue (
         f: list<a>,
         f_size: int,

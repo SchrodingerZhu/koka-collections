@@ -1,3 +1,3 @@
 fun main() {
-    println("success")
+    println("failure")
 }

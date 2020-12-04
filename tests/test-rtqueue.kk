@@ -62,6 +62,6 @@ fun main() {
     }
     if (flag)
     then println("success")
-    else println("false")
+    else println("failure")
 }
 

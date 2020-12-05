@@ -75,7 +75,7 @@ private fun ins ( t: avlnode<a>, x: a, compare: (a, a) -> order ) : ( avlnode<a>
     }
 }
 
-private fun del ( t: avlnode<a>, x: a, compare: (a, a) -> order ) : ( avlnode<a>, int) {
+private fun del ( t: avlnode<a>, x: a, compare: (a, a) -> order ) : (avlnode<a>, int) {
     match ( t ) {
         Empty ->  ( Empty, 0 )
         Branch ( l, k, r, d ) ->
@@ -85,11 +85,23 @@ private fun del ( t: avlnode<a>, x: a, compare: (a, a) -> order ) : ( avlnode<a>
                 Eq -> 
                     if (l.is-empty) then (r, -1)      
                     elif (r.is-empty) then (l, -1)
-                    else match ( r.min ) {
-                        Just ( k' ) -> node ( ( l, 0 ), k', r.del(k', compare), d )
+                    else match ( r.del-min ) {
+                        (r', d', Just ( k' ) ) -> node ( ( l, 0 ), k', (r', d'), d )
                         _ -> ( t, 0 )
                     }
             }
+    }
+}
+
+private fun del-min ( t: avlnode<a> ) : ( avlnode<a>, int, maybe<a> ) {
+    match ( t ) {
+        Empty -> ( Empty, 0, Nothing )
+        Branch ( Empty, k, r, _ ) -> ( r, -1, Just(k) )
+        Branch ( l, k, r, d ) -> { 
+            val (l', d', x) = l.del-min
+            val (s, w) = node ( (l', d'), k, (r, 0), d )
+            ( s, w, x )
+        }
     }
 }
 
@@ -127,4 +139,29 @@ pub fun min ( t: avltree<a> ) : maybe<a> {
 
 pub fun contains ( t: avltree<a>, x: a ) : bool {
     t.root.contains(x, t.compare)
+}
+
+pub fun insert-list ( t : avltree<a>, xs: list<a> ) : avltree<a> {
+    match ( xs ) {
+        Nil -> t 
+        Cons(x, xs') -> insert-list( t.insert(x), xs' )
+    }
+}
+
+pub fun avltree ( xs: list<a>, compare: (a, a) -> order ) : avltree<a> {
+    new(compare).insert-list(xs)
+}
+
+private fun to-list ( t: avlnode<a>, xs: list<a> ) : div list<a> {
+    match ( t ) {
+        Empty -> xs
+        _     -> match ( t.del-min ) {
+            ( t', _, Just (x) ) -> to-list ( t', Cons( x, xs ))
+            _                   -> xs
+        }
+    }
+}
+
+pub fun to-list ( t: avltree<a> ) : div list<a> {
+    t.root.to-list( Nil )
 }

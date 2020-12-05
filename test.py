@@ -49,7 +49,7 @@ if __name__ == "__main__":
     setup_logger(log)
 
     log.info("Detecting Koka Version")
-    version = run(["koka", "--version"], stdout=PIPE, text=True).stdout.split()[1].strip(",")
+    version = run(["koka", "--version"], stdout=PIPE).stdout.split()[1].strip(b",")
     log.info("Version {}".format(version))
     log.info("Compiling Test Cases")
     success = True
@@ -57,9 +57,9 @@ if __name__ == "__main__":
         test = TEST_DIR + "/" + "/".join(i[:-2]) + "test-" + i[-1]
         src  = test + ".kk"
         log.info("TESTING {}".format(src))
-        res = run(["koka", *TEST_ARGS, "-e", src, "-v0"], stdout=PIPE, text=True, stderr=PIPE)
+        res = run(["koka", *TEST_ARGS, "-e", src, "-v0"], stdout=PIPE, stderr=PIPE)
         out = res.stdout.strip()
-        if "success" not in out or res.returncode != 0:
+        if b"success" not in out or res.returncode != 0:
             success = False
             log.error("Failed with code: {}\noutput:\n{}\nstderr:\n {}".format(res.returncode, res.stdout.strip(), res.stderr.strip()))
         else:

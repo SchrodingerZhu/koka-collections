@@ -24,7 +24,8 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-
+      - name: Install Koka
+        run: curl -sSL https://github.com/koka-lang/koka/releases/latest/download/install.sh | sh
       # Runs a single command using the runners shell
-      - name: Run a one-line script
+      - name: Test
         run: python3 ./test.py

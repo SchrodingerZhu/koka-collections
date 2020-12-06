@@ -50,7 +50,7 @@ if __name__ == "__main__":
 
     log.info("Detecting Koka Version")
     version = run(["koka", "--version"], stdout=PIPE).stdout.split()[1].strip(b",")
-    log.info("Version {}".format(version))
+    log.info("Version {}".format(version.decode()))
     log.info("Compiling Test Cases")
     success = True
     for i in MODULES:

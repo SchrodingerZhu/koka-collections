@@ -107,6 +107,10 @@ fun digit(n : node<a>) : digit<a> {
     }
 }
 
+fun node1(a: node<a>): node<node<a>> {
+    Node1(a.size, a)
+}
+
 fun node2(a: node<a>, b: node<a>): node<node<a>> {
     Node2(a.size + b.size, a, b)
 }
@@ -335,4 +339,109 @@ fun init(s: seq<a>) : div seq<a> {
         NilR -> Seq(Empty)
         VSnoc(t, _) -> Seq(t)
     }
+}
+
+fun nodes(x: ndigit<a>, y: ndigit<a>, z: ndigit<a>): ndigit<node<a>> {
+    match ((x, y, z)) {
+        (One(a0), Zero, One(a1)) -> One(node2(a0, a1))
+        (One(a0), Zero, Two(a1, a2)) -> One(node3(a0, a1, a2))
+        (One(a0), Zero, Three(a1, a2, a3)) -> Two(node2(a0, a1), node2(a2, a3))
+        (One(a0), Zero, Four(a1, a2, a3, a4)) -> Two(node3(a0, a1, a2), node2(a3, a4))
+        (One(a0), One(a1), One(a2)) -> One(node3(a0, a1, a2))
+        (One(a0), One(a1), Two(a2, a3)) -> Two(node2(a0, a1), node2(a2, a3))
+        (One(a0), One(a1), Three(a2, a3, a4)) -> Two(node3(a0, a1, a2), node2(a3, a4))
+        (One(a0), One(a1), Four(a2, a3, a4, a5)) -> Two(node3(a0, a1, a2), node3(a3, a4, a5))
+        (One(a0), Two(a1, a2), One(a3)) -> Two(node2(a0, a1), node2(a2, a3))
+        (One(a0), Two(a1, a2), Two(a3, a4)) -> Two(node3(a0, a1, a2), node2(a3, a4))
+        (One(a0), Two(a1, a2), Three(a3, a4, a5)) -> Two(node3(a0, a1, a2), node3(a3, a4, a5))
+        (One(a0), Two(a1, a2), Four(a3, a4, a5, a6)) -> Three(node3(a0, a1, a2), node2(a3, a4), node2(a5, a6))
+        (One(a0), Three(a1, a2, a3), One(a4)) -> Two(node3(a0, a1, a2), node2(a3, a4))
+        (One(a0), Three(a1, a2, a3), Two(a4, a5)) -> Two(node3(a0, a1, a2), node3(a3, a4, a5))
+        (One(a0), Three(a1, a2, a3), Three(a4, a5, a6)) -> Three(node3(a0, a1, a2), node2(a3, a4), node2(a5, a6))
+        (One(a0), Three(a1, a2, a3), Four(a4, a5, a6, a7)) -> Three(node3(a0, a1, a2), node3(a3, a4, a5), node2(a6, a7))
+        (One(a0), Four(a1, a2, a3, a4), One(a5)) -> Two(node3(a0, a1, a2), node3(a3, a4, a5))
+        (One(a0), Four(a1, a2, a3, a4), Two(a5, a6)) -> Three(node3(a0, a1, a2), node2(a3, a4), node2(a5, a6))
+        (One(a0), Four(a1, a2, a3, a4), Three(a5, a6, a7)) -> Three(node3(a0, a1, a2), node3(a3, a4, a5), node2(a6, a7))
+        (One(a0), Four(a1, a2, a3, a4), Four(a5, a6, a7, a8)) -> Three(node3(a0, a1, a2), node3(a3, a4, a5), node3(a6, a7, a8))
+        (Two(a0, a1), Zero, One(a2)) -> One(node3(a0, a1, a2))
+        (Two(a0, a1), Zero, Two(a2, a3)) -> Two(node2(a0, a1), node2(a2, a3))
+        (Two(a0, a1), Zero, Three(a2, a3, a4)) -> Two(node3(a0, a1, a2), node2(a3, a4))
+        (Two(a0, a1), Zero, Four(a2, a3, a4, a5)) -> Two(node3(a0, a1, a2), node3(a3, a4, a5))
+        (Two(a0, a1), One(a2), One(a3)) -> Two(node2(a0, a1), node2(a2, a3))
+        (Two(a0, a1), One(a2), Two(a3, a4)) -> Two(node3(a0, a1, a2), node2(a3, a4))
+        (Two(a0, a1), One(a2), Three(a3, a4, a5)) -> Two(node3(a0, a1, a2), node3(a3, a4, a5))
+        (Two(a0, a1), One(a2), Four(a3, a4, a5, a6)) -> Three(node3(a0, a1, a2), node2(a3, a4), node2(a5, a6))
+        (Two(a0, a1), Two(a2, a3), One(a4)) -> Two(node3(a0, a1, a2), node2(a3, a4))
+        (Two(a0, a1), Two(a2, a3), Two(a4, a5)) -> Two(node3(a0, a1, a2), node3(a3, a4, a5))
+        (Two(a0, a1), Two(a2, a3), Three(a4, a5, a6)) -> Three(node3(a0, a1, a2), node2(a3, a4), node2(a5, a6))
+        (Two(a0, a1), Two(a2, a3), Four(a4, a5, a6, a7)) -> Three(node3(a0, a1, a2), node3(a3, a4, a5), node2(a6, a7))
+        (Two(a0, a1), Three(a2, a3, a4), One(a5)) -> Two(node3(a0, a1, a2), node3(a3, a4, a5))
+        (Two(a0, a1), Three(a2, a3, a4), Two(a5, a6)) -> Three(node3(a0, a1, a2), node2(a3, a4), node2(a5, a6))
+        (Two(a0, a1), Three(a2, a3, a4), Three(a5, a6, a7)) -> Three(node3(a0, a1, a2), node3(a3, a4, a5), node2(a6, a7))
+        (Two(a0, a1), Three(a2, a3, a4), Four(a5, a6, a7, a8)) -> Three(node3(a0, a1, a2), node3(a3, a4, a5), node3(a6, a7, a8))
+        (Two(a0, a1), Four(a2, a3, a4, a5), One(a6)) -> Three(node3(a0, a1, a2), node2(a3, a4), node2(a5, a6))
+        (Two(a0, a1), Four(a2, a3, a4, a5), Two(a6, a7)) -> Three(node3(a0, a1, a2), node3(a3, a4, a5), node2(a6, a7))
+        (Two(a0, a1), Four(a2, a3, a4, a5), Three(a6, a7, a8)) -> Three(node3(a0, a1, a2), node3(a3, a4, a5), node3(a6, a7, a8))
+        (Two(a0, a1), Four(a2, a3, a4, a5), Four(a6, a7, a8, a9)) -> Four(node3(a0, a1, a2), node3(a3, a4, a5), node2(a6, a7), node2(a8, a9))
+        (Three(a0, a1, a2), Zero, One(a3)) -> Two(node2(a0, a1), node2(a2, a3))
+        (Three(a0, a1, a2), Zero, Two(a3, a4)) -> Two(node3(a0, a1, a2), node2(a3, a4))
+        (Three(a0, a1, a2), Zero, Three(a3, a4, a5)) -> Two(node3(a0, a1, a2), node3(a3, a4, a5))
+        (Three(a0, a1, a2), Zero, Four(a3, a4, a5, a6)) -> Three(node3(a0, a1, a2), node2(a3, a4), node2(a5, a6))
+        (Three(a0, a1, a2), One(a3), One(a4)) -> Two(node3(a0, a1, a2), node2(a3, a4))
+        (Three(a0, a1, a2), One(a3), Two(a4, a5)) -> Two(node3(a0, a1, a2), node3(a3, a4, a5))
+        (Three(a0, a1, a2), One(a3), Three(a4, a5, a6)) -> Three(node3(a0, a1, a2), node2(a3, a4), node2(a5, a6))
+        (Three(a0, a1, a2), One(a3), Four(a4, a5, a6, a7)) -> Three(node3(a0, a1, a2), node3(a3, a4, a5), node2(a6, a7))
+        (Three(a0, a1, a2), Two(a3, a4), One(a5)) -> Two(node3(a0, a1, a2), node3(a3, a4, a5))
+        (Three(a0, a1, a2), Two(a3, a4), Two(a5, a6)) -> Three(node3(a0, a1, a2), node2(a3, a4), node2(a5, a6))
+        (Three(a0, a1, a2), Two(a3, a4), Three(a5, a6, a7)) -> Three(node3(a0, a1, a2), node3(a3, a4, a5), node2(a6, a7))
+        (Three(a0, a1, a2), Two(a3, a4), Four(a5, a6, a7, a8)) -> Three(node3(a0, a1, a2), node3(a3, a4, a5), node3(a6, a7, a8))
+        (Three(a0, a1, a2), Three(a3, a4, a5), One(a6)) -> Three(node3(a0, a1, a2), node2(a3, a4), node2(a5, a6))
+        (Three(a0, a1, a2), Three(a3, a4, a5), Two(a6, a7)) -> Three(node3(a0, a1, a2), node3(a3, a4, a5), node2(a6, a7))
+        (Three(a0, a1, a2), Three(a3, a4, a5), Three(a6, a7, a8)) -> Three(node3(a0, a1, a2), node3(a3, a4, a5), node3(a6, a7, a8))
+        (Three(a0, a1, a2), Three(a3, a4, a5), Four(a6, a7, a8, a9)) -> Four(node3(a0, a1, a2), node3(a3, a4, a5), node2(a6, a7), node2(a8, a9))
+        (Three(a0, a1, a2), Four(a3, a4, a5, a6), One(a7)) -> Three(node3(a0, a1, a2), node3(a3, a4, a5), node2(a6, a7))
+        (Three(a0, a1, a2), Four(a3, a4, a5, a6), Two(a7, a8)) -> Three(node3(a0, a1, a2), node3(a3, a4, a5), node3(a6, a7, a8))
+        (Three(a0, a1, a2), Four(a3, a4, a5, a6), Three(a7, a8, a9)) -> Four(node3(a0, a1, a2), node3(a3, a4, a5), node2(a6, a7), node2(a8, a9))
+        (Three(a0, a1, a2), Four(a3, a4, a5, a6), Four(a7, a8, a9, a10)) -> Four(node3(a0, a1, a2), node3(a3, a4, a5), node3(a6, a7, a8), node2(a9, a10))
+        (Four(a0, a1, a2, a3), Zero, One(a4)) -> Two(node3(a0, a1, a2), node2(a3, a4))
+        (Four(a0, a1, a2, a3), Zero, Two(a4, a5)) -> Two(node3(a0, a1, a2), node3(a3, a4, a5))
+        (Four(a0, a1, a2, a3), Zero, Three(a4, a5, a6)) -> Three(node3(a0, a1, a2), node2(a3, a4), node2(a5, a6))
+        (Four(a0, a1, a2, a3), Zero, Four(a4, a5, a6, a7)) -> Three(node3(a0, a1, a2), node3(a3, a4, a5), node2(a6, a7))
+        (Four(a0, a1, a2, a3), One(a4), One(a5)) -> Two(node3(a0, a1, a2), node3(a3, a4, a5))
+        (Four(a0, a1, a2, a3), One(a4), Two(a5, a6)) -> Three(node3(a0, a1, a2), node2(a3, a4), node2(a5, a6))
+        (Four(a0, a1, a2, a3), One(a4), Three(a5, a6, a7)) -> Three(node3(a0, a1, a2), node3(a3, a4, a5), node2(a6, a7))
+        (Four(a0, a1, a2, a3), One(a4), Four(a5, a6, a7, a8)) -> Three(node3(a0, a1, a2), node3(a3, a4, a5), node3(a6, a7, a8))
+        (Four(a0, a1, a2, a3), Two(a4, a5), One(a6)) -> Three(node3(a0, a1, a2), node2(a3, a4), node2(a5, a6))
+        (Four(a0, a1, a2, a3), Two(a4, a5), Two(a6, a7)) -> Three(node3(a0, a1, a2), node3(a3, a4, a5), node2(a6, a7))
+        (Four(a0, a1, a2, a3), Two(a4, a5), Three(a6, a7, a8)) -> Three(node3(a0, a1, a2), node3(a3, a4, a5), node3(a6, a7, a8))
+        (Four(a0, a1, a2, a3), Two(a4, a5), Four(a6, a7, a8, a9)) -> Four(node3(a0, a1, a2), node3(a3, a4, a5), node2(a6, a7), node2(a8, a9))
+        (Four(a0, a1, a2, a3), Three(a4, a5, a6), One(a7)) -> Three(node3(a0, a1, a2), node3(a3, a4, a5), node2(a6, a7))
+        (Four(a0, a1, a2, a3), Three(a4, a5, a6), Two(a7, a8)) -> Three(node3(a0, a1, a2), node3(a3, a4, a5), node3(a6, a7, a8))
+        (Four(a0, a1, a2, a3), Three(a4, a5, a6), Three(a7, a8, a9)) -> Four(node3(a0, a1, a2), node3(a3, a4, a5), node2(a6, a7), node2(a8, a9))
+        (Four(a0, a1, a2, a3), Three(a4, a5, a6), Four(a7, a8, a9, a10)) -> Four(node3(a0, a1, a2), node3(a3, a4, a5), node3(a6, a7, a8), node2(a9, a10))
+        (Four(a0, a1, a2, a3), Four(a4, a5, a6, a7), One(a8)) -> Three(node3(a0, a1, a2), node3(a3, a4, a5), node3(a6, a7, a8))
+        (Four(a0, a1, a2, a3), Four(a4, a5, a6, a7), Two(a8, a9)) -> Four(node3(a0, a1, a2), node3(a3, a4, a5), node2(a6, a7), node2(a8, a9))
+        (Four(a0, a1, a2, a3), Four(a4, a5, a6, a7), Three(a8, a9, a10)) -> Four(node3(a0, a1, a2), node3(a3, a4, a5), node3(a6, a7, a8), node2(a9, a10))
+        (Four(a0, a1, a2, a3), Four(a4, a5, a6, a7), Four(a8, a9, a10, a11)) -> Four(node3(a0, a1, a2), node3(a3, a4, a5), node3(a6, a7, a8), node3(a9, a10, a11))
+        _ -> Zero
+    }
+}
+
+fun merge'(a: ntree<a>, b: ndigit<a>, c: ntree<a>): div ntree<a> {
+    match ((a, b, c)) {
+        (Empty, ts, xs) -> foldr(ts, xs, fn (x, t) { t.cons'(x) } )
+        (xs, ts, Empty) -> foldl(ts, xs, snoc')
+        (Leaf(x), ts, xs) -> foldr(ts, xs, fn (y, t) { t.cons'(y) }).cons'(x)
+        (xs, ts, Leaf(x)) -> foldl(ts, xs, snoc').snoc'(x)
+        (Deep(_, f1, t1, r1), ts, Deep(_, f2, t2, r2)) ->
+            deep(f1, merge'(t1, nodes(r1, ts, f2), t2), r2)
+    }
+}
+
+fun merge(x: ntree<a>, y: ntree<a>): div ntree<a> {
+    merge'(x, Zero, y)
+}
+
+fun merge(x: seq<a>, y: seq<a>): div seq<a> {
+    Seq(x.tree.merge(y.tree))
 }

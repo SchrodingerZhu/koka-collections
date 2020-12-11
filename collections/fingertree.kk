@@ -454,3 +454,81 @@ fun merge(x: ntree<a>, y: ntree<a>): div ntree<a> {
 fun merge(x: seq<a>, y: seq<a>): div seq<a> {
     Seq(x.tree.merge(y.tree))
 }
+
+type split<c, a> {
+    con NotFound
+    con Split(front: c<a>, mid: a, rear: c<a>)
+}
+
+fun split'(digit: digit<a>, index: i): split<digit, a> {
+    match ((digit, index)) {
+        (One(x), 0) -> Split(Zero, x, Zero)
+        (Two(x, y), 0) -> Split(Zero, x, One(y))
+        (Two(x, y), 1) -> Split(One(x), y, Zero)
+        (Three(x, y, z), 0) -> Split(Zero, x, Two(y, z))
+        (Three(x, y, z), 1) -> Split(One(x), y, One(z))
+        (Three(x, y, z), 2) -> Split(Two(x, y), z, Zero)
+        (Four(a, b, c, d), 0) -> Split(Zero, a, Three(b, c, d))
+        (Four(a, b, c, d), 1) -> Split(One(a), b, Two(c, d))
+        (Four(a, b, c, d), 2) -> Split(Two(a, b), c, One(d))
+        (Four(a, b, c, d), 3) -> Split(Three(a, b, c), d, Zero)
+        _ -> NotFound
+    }
+}
+
+fun split'(digit: node<a>, index: i): split<digit, a> {
+    match ((digit, index)) {
+        (Node2(_, x, y), 0) -> Split(Zero, x, One(y))
+        (Node2(_, x, y), 1) -> Split(One(x), y, Zero)
+        (Node3(_, x, y, z), 0) -> Split(Zero, x, Two(y, z))
+        (Node3(_, x, y, z), 1) -> Split(One(x), y, One(z))
+        (Node3(_, x, y, z), 2) -> Split(Two(x, y), z, Zero)
+        (Node1(_, x), 0) -> Split(Zero, x, Zero)
+        _ -> NotFound
+    }
+}
+
+fun digit-to-tree(digit: ndigit<a>): ntree<a> {
+    match (digit) {
+        Zero -> Empty
+        One(a) -> Leaf(a)
+        Two(a, b) -> deep(One(a), Empty, One(b))
+        Three(a, b, c) -> deep(Two(a, b), Empty, One(c))
+        Four(a, b, c, d) -> deep(Two(a, b), Empty, Two(c, d))
+    }
+}
+
+fun split'(tree: ntree<a>, index: int): div split<tree, node<a>> {
+    match (tree) {
+        Empty -> NotFound
+        Leaf(a) -> Split(Empty, a, Empty)
+        Deep(_, dl, t, dr) -> {
+            if (dl.size > index) then match (dl.split'(index)) {
+                Split (l, a, r) -> Split (l.digit-to-tree, a, left-deep(r, t, dr))
+                _ -> NotFound
+            }
+            elif (dl.size + t.size > index) then match (t.split'(index - dl.size)) {
+                Split (tl, ta, tr) -> match (ta.split'(index - dl.size - tl.size)) {
+                    Split(l, a, r) -> Split (right-deep(dl, tl, l), a, left-deep(r, tr, dr))
+                    _ -> NotFound
+                }
+                _ -> NotFound
+            }
+            else match (dr.split'(index - dl.size - t.size)) {
+                Split (l, a, r) -> Split (right-deep(dl, t, l), a, r.digit-to-tree)
+                _ -> NotFound
+            }
+        }
+    } 
+}
+
+fun split-at(seq: seq<a>, index: int) : div (seq<a>, seq<a>) {
+    if (seq.tree.is-empty)
+    then (new(), new())
+    elif (seq.tree.size <= index)
+    then (seq, new())
+    else match (seq.tree.split'(index)) {
+        Split (l, a, r) -> (Seq(l), Seq(r.cons'(a)))
+        _ -> (new(), new())
+    }
+}

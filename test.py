@@ -7,7 +7,8 @@ NAME = "collections"
 
 MODULES = (
     ["rtqueue"],
-    ["avltree"]
+    ["avltree"],
+    ["fingertree"]
 )
 
 TEST_ARGS = ["-O2"]
@@ -51,12 +52,12 @@ if __name__ == "__main__":
     log.info("Detecting Koka Version")
     version = run(["koka", "--version"], stdout=PIPE).stdout.split()[1].strip(b",")
     log.info("Version {}".format(version.decode()))
-    log.info("Compiling Test Cases")
+    log.info("Executing Test Cases")
     success = True
     for i in MODULES:
         test = TEST_DIR + "/" + "/".join(i[:-2]) + "test-" + i[-1]
         src  = test + ".kk"
-        log.info("TESTING {}".format(src))
+        log.info("RUNNING {}".format(src))
         res = run(["koka", *TEST_ARGS, "-e", src, "-v0"], stdout=PIPE, stderr=PIPE)
         out = res.stdout.strip()
         if b"success" not in out or res.returncode != 0:

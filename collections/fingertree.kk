@@ -1,12 +1,12 @@
 public module collections/fingertree
 
-type node<a> { 
+private type node<a> { 
     con Node1 (size: int, x: a) // this will not appear as branches; instead, it is only data wrappers
     con Node2 (size: int, x: a, y: a)
     con Node3 (size: int, x: a, y: a, z: a)
 }
 
-type digit<a> {
+private type digit<a> {
     con Zero
     con One   (a: a)
     con Two   (a: a, b: a)
@@ -14,7 +14,7 @@ type digit<a> {
     con Four  (a: a, b: a, c: a, d: a)
 }
 
-type tree<a> {
+private type tree<a> {
     con Empty
     con Leaf (element: a)
     con Deep (
@@ -25,7 +25,7 @@ type tree<a> {
     )
 }
 
-fun size ( xs: digit<node<a>> ): int {
+private fun size ( xs: digit<node<a>> ): int {
     match (xs) {
         Zero -> 0
         One(a) -> a.size
@@ -35,7 +35,7 @@ fun size ( xs: digit<node<a>> ): int {
     }
 }
 
-fun size ( xs: tree<node<a>> ): int {
+private fun size ( xs: tree<node<a>> ): int {
     match (xs) {
         Empty -> 0
         Leaf (a) -> a.size
@@ -43,7 +43,7 @@ fun size ( xs: tree<node<a>> ): int {
     }
 }
 
-fun foldr(xs: digit<a>, init: b, (-<): (a, b) -> e b): e b {
+private fun foldr(xs: digit<a>, init: b, (-<): (a, b) -> e b): e b {
     match (xs) {
         Zero -> init
         One(a) -> a -< init
@@ -53,7 +53,7 @@ fun foldr(xs: digit<a>, init: b, (-<): (a, b) -> e b): e b {
     }
 }
 
-fun foldl(xs: digit<a>, init: b, (>-): (b, a) -> e b): e b {
+private fun foldl(xs: digit<a>, init: b, (>-): (b, a) -> e b): e b {
     match (xs) {
         Zero -> init
         One(a) -> init >- a
@@ -63,7 +63,7 @@ fun foldl(xs: digit<a>, init: b, (>-): (b, a) -> e b): e b {
     }
 }
 
-fun foldr(xs: node<a>, init: b, (-<): (a, b) -> e b): e b {
+private fun foldr(xs: node<a>, init: b, (-<): (a, b) -> e b): e b {
     match (xs) {
         Node1(_, a) -> a -< init
         Node2(_, a, b) -> a -< (b -< init)
@@ -71,7 +71,7 @@ fun foldr(xs: node<a>, init: b, (-<): (a, b) -> e b): e b {
     }
 }
 
-fun foldl(xs: node<a>, init: b, (>-): (b, a) -> e b): e b {
+private fun foldl(xs: node<a>, init: b, (>-): (b, a) -> e b): e b {
     match (xs) {
         Node1(_, a) -> init >- a
         Node2(_, a, b) -> (init >- a) >- b
@@ -79,7 +79,7 @@ fun foldl(xs: node<a>, init: b, (>-): (b, a) -> e b): e b {
     }
 }
 
-fun foldr(xs: tree<a>, init: b, func: (a, b) -> e b): e b {
+private fun foldr(xs: tree<a>, init: b, func: (a, b) -> e b): e b {
     match ( xs ) {
         Empty -> init
         Leaf (x) -> func(x, init)
@@ -89,7 +89,7 @@ fun foldr(xs: tree<a>, init: b, func: (a, b) -> e b): e b {
     }
 }
 
-fun foldl(xs: tree<a>, init: b, func: (b, a) -> e b): e b {
+private fun foldl(xs: tree<a>, init: b, func: (b, a) -> e b): e b {
     match ( xs ) {
         Empty -> init
         Leaf (x) -> func(init, x)
@@ -99,7 +99,7 @@ fun foldl(xs: tree<a>, init: b, func: (b, a) -> e b): e b {
     }
 }
 
-fun digit(n : node<a>) : digit<a> {
+private fun digit(n : node<a>) : digit<a> {
     match(n) {
         Node1(_, x) -> One(x)
         Node2(_, x, y) -> Two(x, y)
@@ -107,37 +107,37 @@ fun digit(n : node<a>) : digit<a> {
     }
 }
 
-fun node1(a: node<a>): node<node<a>> {
+private fun node1(a: node<a>): node<node<a>> {
     Node1(a.size, a)
 }
 
-fun node2(a: node<a>, b: node<a>): node<node<a>> {
+private fun node2(a: node<a>, b: node<a>): node<node<a>> {
     Node2(a.size + b.size, a, b)
 }
 
-fun node3(a: node<a>, b: node<a>, c: node<a>): node<node<a>> {
+private fun node3(a: node<a>, b: node<a>, c: node<a>): node<node<a>> {
     Node3(a.size + b.size + c.size, a, b, c)
 }
 
 alias ndigit<a> = digit<node<a>>
 alias ntree<a> = tree<node<a>>
 
-fun deep(f: ndigit<a>, m: ntree<node<a>>, r: ndigit<a>) : ntree<a> {
+private fun deep(f: ndigit<a>, m: ntree<node<a>>, r: ndigit<a>) : ntree<a> {
     Deep (f.size + m.size + r.size, f, m, r)
 }
 
-type left-view<s, a> {
+private type left-view<s, a> {
     con NilL
     con VCons(x: a, xs: s<a>)
 }
 
-type right-view<s, a> {
+private type right-view<s, a> {
     con NilR
     con VSnoc(xs: s<a>, x: a)
 }
 
 
-fun cons ( xs: digit<a>, a: a ) : digit<a> {
+private fun cons ( xs: digit<a>, a: a ) : digit<a> {
     match (xs) {
         Zero -> One(a)
         One(b) -> Two(a, b)
@@ -147,7 +147,7 @@ fun cons ( xs: digit<a>, a: a ) : digit<a> {
     }
 }
 
-fun snoc ( xs: digit<a>, a: a ) : digit<a> {
+private fun snoc ( xs: digit<a>, a: a ) : digit<a> {
     match (xs) {
         Zero -> One(a)
         One(b) -> Two(b, a)
@@ -157,7 +157,7 @@ fun snoc ( xs: digit<a>, a: a ) : digit<a> {
     }
 }
 
-fun left-head ( xs: digit<a>) : maybe<a> {
+private fun left-head ( xs: digit<a>) : maybe<a> {
     match (xs) {
         Zero -> Nothing
         One(a) -> Just(a)
@@ -167,7 +167,7 @@ fun left-head ( xs: digit<a>) : maybe<a> {
     }
 }
 
-fun right-head ( xs: digit<a> ) : maybe<a> {
+private fun right-head ( xs: digit<a> ) : maybe<a> {
     match (xs) {
         Zero -> Nothing
         One(a) -> Just(a)
@@ -177,7 +177,7 @@ fun right-head ( xs: digit<a> ) : maybe<a> {
     }
 }
 
-fun left-tail ( xs: digit<a> ) : digit<a> {
+private fun left-tail ( xs: digit<a> ) : digit<a> {
     match (xs) {
         Two(_, b) -> One(b)
         Three(_, b, c) -> Two(b, c)
@@ -186,7 +186,7 @@ fun left-tail ( xs: digit<a> ) : digit<a> {
     }
 }
 
-fun right-tail ( xs: digit<a> ) : digit<a> {
+private fun right-tail ( xs: digit<a> ) : digit<a> {
     match (xs) {
         Two(b, _) -> One(b)
         Three(c, b, _) -> Two(c, b)
@@ -195,7 +195,7 @@ fun right-tail ( xs: digit<a> ) : digit<a> {
     }
 }
 
-fun left-deep (f: ndigit<a>, m: tree<node<node<a>>>, r: ndigit<a>): div ntree<a> {
+private fun left-deep (f: ndigit<a>, m: tree<node<node<a>>>, r: ndigit<a>): div ntree<a> {
     match (f) {
         Zero -> match (m.left-view) {
             NilL -> r.tree
@@ -205,7 +205,7 @@ fun left-deep (f: ndigit<a>, m: tree<node<node<a>>>, r: ndigit<a>): div ntree<a>
     }
 }
 
-fun right-deep (f: ndigit<a>, m: tree<node<node<a>>>, r: ndigit<a>): div ntree<a> {
+private fun right-deep (f: ndigit<a>, m: tree<node<node<a>>>, r: ndigit<a>): div ntree<a> {
     match (r) {
         Zero -> match (m.right-view) {
             NilR -> f.tree
@@ -215,11 +215,11 @@ fun right-deep (f: ndigit<a>, m: tree<node<node<a>>>, r: ndigit<a>): div ntree<a
     }
 }
 
-fun tree(d: ndigit<a>): div ntree<a> {
+private fun tree(d: ndigit<a>): div ntree<a> {
     d.foldr(Empty, fn (x, t) { t.cons'(x) })
 }
 
-fun cons'(t: ntree<a>, x: node<a>) : div ntree<a> {
+private fun cons'(t: ntree<a>, x: node<a>) : div ntree<a> {
     match (t) {
         Empty -> Leaf(x)
         Leaf(y) -> deep(One(x), Empty, One(y))
@@ -230,7 +230,7 @@ fun cons'(t: ntree<a>, x: node<a>) : div ntree<a> {
     }
 }
 
-fun snoc'(t: ntree<a>, x: node<a>) : div ntree<a> {
+private fun snoc'(t: ntree<a>, x: node<a>) : div ntree<a> {
     match (t) {
         Empty -> Leaf(x)
         Leaf(y) -> deep(One(y), Empty, One(x))
@@ -243,7 +243,7 @@ fun snoc'(t: ntree<a>, x: node<a>) : div ntree<a> {
 
 
 
-fun left-view(t: ntree<a>) : div left-view<tree, node<a>> {
+private fun left-view(t: ntree<a>) : div left-view<tree, node<a>> {
     match ( t ) {
         Empty -> NilL
         Leaf(a) -> VCons(a, Empty)
@@ -254,7 +254,7 @@ fun left-view(t: ntree<a>) : div left-view<tree, node<a>> {
     }
 }
 
-fun right-view(t: ntree<a>) : div right-view<tree, node<a>> {
+private fun right-view(t: ntree<a>) : div right-view<tree, node<a>> {
     match ( t ) {
         Empty -> NilR
         Leaf(a) -> VSnoc(Empty, a)
@@ -265,92 +265,92 @@ fun right-view(t: ntree<a>) : div right-view<tree, node<a>> {
     }
 }
 
-fun head(t: ntree<a>): div maybe<node<a>> {
+private fun head(t: ntree<a>): div maybe<node<a>> {
     match (t.left-view) {
         VCons(a, _) -> Just(a)
         _           -> Nothing
     }
 }
 
-fun tail(t: ntree<a>): div ntree<a> {
+private fun tail(t: ntree<a>): div ntree<a> {
     match (t.left-view) {
         VCons(_, t') -> t'
         _           -> Empty
     }
 }
 
-fun last(t: ntree<a>): div maybe<node<a>> {
+private fun last(t: ntree<a>): div maybe<node<a>> {
     match (t.right-view) {
         VSnoc(_, a) -> Just(a)
         _           -> Nothing
     }
 }
 
-fun init(t: ntree<a>): div ntree<a> {
+private fun init(t: ntree<a>): div ntree<a> {
     match (t.right-view) {
         VSnoc(t', _) -> t'
         _           -> Empty
     }
 }
 
-type seq<a> {
+public type seq<a> {
     con Seq(tree: ntree<a>)
 }
 
-fun new(): seq<a> {
+public fun new(): seq<a> {
     Seq(Empty)
 }
 
-fun cons(s: seq<a>, x: a): div seq<a> {
+public fun cons(s: seq<a>, x: a): div seq<a> {
     Seq(s.tree.cons'(Node1(1, x)))
 }
 
-fun snoc(s: seq<a>, x: a): div seq<a> {
+public fun snoc(s: seq<a>, x: a): div seq<a> {
     Seq(s.tree.snoc'(Node1(1, x)))
 }
 
-fun size(s: seq<q>) : int {
+public fun size(s: seq<q>) : int {
     s.tree.size
 }
 
-fun head(s: seq<a>) : div maybe<a> {
+public fun head(s: seq<a>) : div maybe<a> {
     match (s.tree.left-view) {
         NilL -> Nothing
         VCons(n, _) -> Just(n.x)
     }
 }
 
-fun tail(s: seq<a>) : div seq<a> {
+public fun tail(s: seq<a>) : div seq<a> {
     match (s.tree.left-view) {
         NilL -> Seq(Empty)
         VCons(_, t) -> Seq(t)
     }
 }
 
-fun last(s: seq<a>) : div maybe<a> {
+public fun last(s: seq<a>) : div maybe<a> {
     match (s.tree.right-view) {
         NilR -> Nothing
         VSnoc(_, n) -> Just(n.x)
     }
 }
 
-fun init(s: seq<a>) : div seq<a> {
+public fun init(s: seq<a>) : div seq<a> {
     match (s.tree.right-view) {
         NilR -> Seq(Empty)
         VSnoc(t, _) -> Seq(t)
     }
 }
 
-fun seq(xs: list<a>): div seq<a> {
+public fun seq(xs: list<a>): div seq<a> {
     xs.foldl(new(), snoc)
 }
 
-fun list(xs: seq<a>): list<a> {
+public fun list(xs: seq<a>): list<a> {
     xs.tree.foldr(Nil, fn (n, acc) { Cons(n.x, acc) })
 }
 
 // this part is generated by other programs
-fun nodes(x: ndigit<a>, y: ndigit<a>, z: ndigit<a>): ndigit<node<a>> {
+private fun nodes(x: ndigit<a>, y: ndigit<a>, z: ndigit<a>): ndigit<node<a>> {
     match ((x, y, z)) {
         (One(a0), Zero, One(a1)) -> One(node2(a0, a1))
         (One(a0), Zero, Two(a1, a2)) -> One(node3(a0, a1, a2))
@@ -436,7 +436,7 @@ fun nodes(x: ndigit<a>, y: ndigit<a>, z: ndigit<a>): ndigit<node<a>> {
     }
 }
 
-fun merge'(a: ntree<a>, b: ndigit<a>, c: ntree<a>): div ntree<a> {
+private fun merge'(a: ntree<a>, b: ndigit<a>, c: ntree<a>): div ntree<a> {
     match ((a, b, c)) {
         (Empty, ts, xs) -> foldr(ts, xs, fn (x, t) { t.cons'(x) } )
         (xs, ts, Empty) -> foldl(ts, xs, snoc')
@@ -447,20 +447,20 @@ fun merge'(a: ntree<a>, b: ndigit<a>, c: ntree<a>): div ntree<a> {
     }
 }
 
-fun merge(x: ntree<a>, y: ntree<a>): div ntree<a> {
+private fun merge(x: ntree<a>, y: ntree<a>): div ntree<a> {
     merge'(x, Zero, y)
 }
 
-fun merge(x: seq<a>, y: seq<a>): div seq<a> {
+public fun merge(x: seq<a>, y: seq<a>): div seq<a> {
     Seq(x.tree.merge(y.tree))
 }
 
-type split<c, a> {
+public type split<c, a> {
     con NotFound
     con Split(front: c<a>, mid: a, rear: c<a>)
 }
 
-fun map(digit: digit<a>, f: a -> e b): e digit<b> {
+private fun map(digit: digit<a>, f: a -> e b): e digit<b> {
     match (digit) {
         Zero -> Zero
         One(a) -> One(f(a))
@@ -470,7 +470,7 @@ fun map(digit: digit<a>, f: a -> e b): e digit<b> {
     }
 }
 
-fun reverse(digit: digit<a>, f: a -> e b): e digit<b> {
+private fun reverse(digit: digit<a>, f: a -> e b): e digit<b> {
     match (digit) {
         Zero -> Zero
         One(a) -> One(f(a))
@@ -480,7 +480,7 @@ fun reverse(digit: digit<a>, f: a -> e b): e digit<b> {
     }
 }
 
-fun split'(digit: ndigit<a>, index: int): split<digit, node<a>> {
+private fun split'(digit: ndigit<a>, index: int): split<digit, node<a>> {
     match (digit) {
         One(x) -> Split(Zero, x, Zero)
         Two(x, y) -> 
@@ -499,7 +499,7 @@ fun split'(digit: ndigit<a>, index: int): split<digit, node<a>> {
     }
 }
 
-fun lookup(digit: ndigit<a>, index: int): maybe<(int, node<a>)> {
+private fun lookup(digit: ndigit<a>, index: int): maybe<(int, node<a>)> {
     match (digit) {
         One(x) -> Just((0, x))
         Two(x, y) -> 
@@ -518,7 +518,7 @@ fun lookup(digit: ndigit<a>, index: int): maybe<(int, node<a>)> {
     }
 }
 
-fun split'(node: node<node<a>>, index: int): split<digit, node<a>> {
+private fun split'(node: node<node<a>>, index: int): split<digit, node<a>> {
     match (node) {
         Node1(_, x) -> Split(Zero, x, Zero)
         Node2(_, x, y) -> 
@@ -532,7 +532,7 @@ fun split'(node: node<node<a>>, index: int): split<digit, node<a>> {
     }
 }
 
-fun lookup(node: node<node<a>>, index: int): maybe<(int, node<a>)> {
+private fun lookup(node: node<node<a>>, index: int): maybe<(int, node<a>)> {
     match (node) {
         Node1(_, x) -> Just((0, x))
         Node2(_, x, y) -> 
@@ -546,7 +546,7 @@ fun lookup(node: node<node<a>>, index: int): maybe<(int, node<a>)> {
     }
 }
 
-fun map(node: node<a>, f: a -> e b): e node<b> {
+private fun map(node: node<a>, f: a -> e b): e node<b> {
     match (node) {
         Node1(s, x) -> Node1(s, f(x))
         Node2(s, x, y) -> Node2(s, f(x), f(y))
@@ -554,7 +554,7 @@ fun map(node: node<a>, f: a -> e b): e node<b> {
     }
 }
 
-fun reverse(node: node<a>, f: a -> e b): e node<b> {
+private fun reverse(node: node<a>, f: a -> e b): e node<b> {
     match (node) {
         Node1(s, x) -> Node1(s, f(x))
         Node2(s, x, y) -> Node2(s, f(y), f(x))
@@ -563,7 +563,7 @@ fun reverse(node: node<a>, f: a -> e b): e node<b> {
 }
 
 
-fun digit-to-tree(digit: ndigit<a>): ntree<a> {
+private fun digit-to-tree(digit: ndigit<a>): ntree<a> {
     match (digit) {
         Zero -> Empty
         One(a) -> Leaf(a)
@@ -573,7 +573,7 @@ fun digit-to-tree(digit: ndigit<a>): ntree<a> {
     }
 }
 
-fun split'(tree: ntree<a>, index: int): div split<tree, node<a>> {
+private fun split'(tree: ntree<a>, index: int): div split<tree, node<a>> {
     match (tree) {
         Empty -> NotFound
         Leaf(a) -> Split(Empty, a, Empty)
@@ -603,7 +603,7 @@ fun split'(tree: ntree<a>, index: int): div split<tree, node<a>> {
     } 
 }
 
-fun lookup(tree: ntree<a>, index: int): div maybe<(int, node<a>)> {
+private fun lookup(tree: ntree<a>, index: int): div maybe<(int, node<a>)> {
     match (tree) {
         Empty -> Nothing
         Leaf(a) -> Just((0, a))
@@ -626,7 +626,7 @@ fun lookup(tree: ntree<a>, index: int): div maybe<(int, node<a>)> {
     } 
 }
 
-fun map(tree: tree<a>, f: a -> e b): e tree<b> {
+private fun map(tree: tree<a>, f: a -> e b): e tree<b> {
     match (tree) {
         Empty -> Empty
         Leaf(x) -> Leaf(f(x))
@@ -634,7 +634,7 @@ fun map(tree: tree<a>, f: a -> e b): e tree<b> {
     }
 }
 
-fun reverse(tree: tree<a>, f: a -> e b): e tree<b> {
+private fun reverse(tree: tree<a>, f: a -> e b): e tree<b> {
     match (tree) {
         Empty -> Empty
         Leaf(x) -> Leaf(f(x))
@@ -642,7 +642,7 @@ fun reverse(tree: tree<a>, f: a -> e b): e tree<b> {
     }
 }
 
-fun split(seq: seq<a>, index: int) : div (seq<a>, seq<a>) {
+public fun split(seq: seq<a>, index: int) : div (seq<a>, seq<a>) {
     if (seq.tree.is-empty)
     then (new(), new())
     elif (index <= 0)
@@ -655,7 +655,7 @@ fun split(seq: seq<a>, index: int) : div (seq<a>, seq<a>) {
     }
 }
 
-fun at(seq: seq<a>, index: int) : div maybe<a> {
+public fun at(seq: seq<a>, index: int) : div maybe<a> {
     if (seq.tree.is-empty)
     then Nothing
     elif (index < 0)
@@ -668,25 +668,30 @@ fun at(seq: seq<a>, index: int) : div maybe<a> {
     }
 }
 
-
-
-fun show(seq: seq<int>): string {
+public fun show(seq: seq<int>): string {
     "<" + seq.list.show + ">"
 }
 
-fun show(seq: seq<bool>): string {
+public fun show(seq: seq<bool>): string {
     "<" + seq.list.show + ">"
 }
 
-fun show(seq: seq<string>): string {
+public fun show(seq: seq<string>): string {
     "<" + seq.list.show + ">"
 }
 
-fun map(seq: seq<a>, f: a -> e b): e seq<b> {
+public fun map(seq: seq<a>, f: a -> e b): e seq<b> {
     Seq(seq.tree.map(fn (x) { x.map(f) } ))
 }
 
-
-fun reverse(seq: seq<a>): seq<a> {
+public fun reverse(seq: seq<a>): seq<a> {
     Seq(seq.tree.reverse(id) )
+}
+
+public fun foldl(seq: seq<a>, init: b, f: (b, a) -> e b): e b {
+    seq.tree.foldl(init, fn (acc, n) { f(acc, n.x) })
+}
+
+public fun foldr(seq: seq<a>, init: b, f: (a, b) -> e b): e b {
+    seq.tree.foldr(init, fn (n, acc) { f(n.x, acc) })
 }

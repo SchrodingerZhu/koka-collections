@@ -60,7 +60,7 @@ fun lookup-eq(length: int, seq: seq<int>, l: list<int>): <console, div> bool {
 fun randomized-eq (x: list<int>, y: seq<int>, cnt: int): <ndet, div> bool {
     if (cnt == 0)
     then list-eq(x, y.list)
-    else match (random/srandom-int() % 9) {
+    else match (random/srandom-int() % 10) {
         0 -> if (x.head !== y.head) then False else randomized-eq(x, y, cnt - 1)
         1 -> if (x.last !== y.last) then False else randomized-eq(x, y, cnt - 1)
         2 -> randomized-eq(x.tail, y.tail, cnt - 1)
@@ -77,6 +77,9 @@ fun randomized-eq (x: list<int>, y: seq<int>, cnt: int): <ndet, div> bool {
         7 -> {
             val index = 5000 + random/srandom-int() % (y.size + 1);
             randomized-eq(x.split(index).fst, y.split(index).fst, cnt - 1)
+        }
+        8 -> {
+            randomized-eq(x.reverse, y.reverse, cnt - 1)
         }
         _ -> {
             val x' = random-list(100, Nil)
@@ -103,6 +106,16 @@ fun main() {
         println("merge not equal")
     }
 
+    if ( !list-eq ( data.reverse, data.seq.reverse.list ) ) {
+        flag := False
+        println("reverse not equal")
+    }
+
+    if ( !list-eq ( data.map(fn (x) { x - 1 }), data.seq.map(fn (x) { x - 1 }).list ) ) {
+        flag := False
+        println("map not equal")
+    }
+
     val split-test = random-list(500, Nil)
     if ( !split-eq(501, split-test.seq, split-test) ) {
         flag := False
@@ -114,7 +127,7 @@ fun main() {
         flag := False
         println("lookup not equal")
     }
-    if ( !randomized-eq(test, test.seq, 20000) ) {
+    if ( !randomized-eq(test, test.seq, 30000) ) {
         flag := False
         println("randomized not equal")
     }

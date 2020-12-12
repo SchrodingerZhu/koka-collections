@@ -460,6 +460,26 @@ type split<c, a> {
     con Split(front: c<a>, mid: a, rear: c<a>)
 }
 
+fun map(digit: digit<a>, f: a -> e b): e digit<b> {
+    match (digit) {
+        Zero -> Zero
+        One(a) -> One(f(a))
+        Two(a, b) -> Two(f(a), f(b))
+        Three(a, b, c) -> Three(f(a), f(b), f(c))
+        Four(a, b, c, d) -> Four(f(a), f(b), f(c), f(d))
+    }
+}
+
+fun reverse(digit: digit<a>, f: a -> e b): e digit<b> {
+    match (digit) {
+        Zero -> Zero
+        One(a) -> One(f(a))
+        Two(a, b) -> Two(f(b), f(a))
+        Three(a, b, c) -> Three(f(c), f(b), f(a))
+        Four(a, b, c, d) -> Four(f(d), f(c), f(b), f(a))
+    }
+}
+
 fun split'(digit: ndigit<a>, index: int): split<digit, node<a>> {
     match (digit) {
         One(x) -> Split(Zero, x, Zero)
@@ -526,6 +546,23 @@ fun lookup(node: node<node<a>>, index: int): maybe<(int, node<a>)> {
     }
 }
 
+fun map(node: node<a>, f: a -> e b): e node<b> {
+    match (node) {
+        Node1(s, x) -> Node1(s, f(x))
+        Node2(s, x, y) -> Node2(s, f(x), f(y))
+        Node3(s, x, y, z) -> Node3(s, f(x), f(y), f(z))
+    }
+}
+
+fun reverse(node: node<a>, f: a -> e b): e node<b> {
+    match (node) {
+        Node1(s, x) -> Node1(s, f(x))
+        Node2(s, x, y) -> Node2(s, f(y), f(x))
+        Node3(s, x, y, z) -> Node3(s, f(z), f(y), f(x))
+    }
+}
+
+
 fun digit-to-tree(digit: ndigit<a>): ntree<a> {
     match (digit) {
         Zero -> Empty
@@ -589,6 +626,21 @@ fun lookup(tree: ntree<a>, index: int): div maybe<(int, node<a>)> {
     } 
 }
 
+fun map(tree: tree<a>, f: a -> e b): e tree<b> {
+    match (tree) {
+        Empty -> Empty
+        Leaf(x) -> Leaf(f(x))
+        Deep(s, l, m, r) -> Deep(s, l.map(f), m.map(fn (x) { x.map(f) }), r.map(f))
+    }
+}
+
+fun reverse(tree: tree<a>, f: a -> e b): e tree<b> {
+    match (tree) {
+        Empty -> Empty
+        Leaf(x) -> Leaf(f(x))
+        Deep(s, l, m, r) -> Deep(s, r.reverse(f), m.reverse(fn (x) { x.reverse(f) }), l.reverse(f))
+    }
+}
 
 fun split(seq: seq<a>, index: int) : div (seq<a>, seq<a>) {
     if (seq.tree.is-empty)
@@ -628,4 +680,13 @@ fun show(seq: seq<bool>): string {
 
 fun show(seq: seq<string>): string {
     "<" + seq.list.show + ">"
+}
+
+fun map(seq: seq<a>, f: a -> e b): e seq<b> {
+    Seq(seq.tree.map(fn (x) { x.map(f) } ))
+}
+
+
+fun reverse(seq: seq<a>): seq<a> {
+    Seq(seq.tree.reverse(id) )
 }

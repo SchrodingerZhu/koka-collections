@@ -26,10 +26,27 @@ fun (!==)(a: maybe<int>, b: maybe<int>): bool {
     }
 }
 
+fun split-eq(length: int, seq: seq<int>, l: list<int>): <console, div> bool {
+    if (length < 0)
+    then True
+    else {
+        val seq-split = seq.split(length)
+        val list-split = l.split(length)
+        if (list-eq(list(seq-split.fst), list-split.fst) && list-eq(list(seq-split.snd), list-split.snd)) 
+        then split-eq(length - 1, seq, l)
+        else {
+            print("split at ")
+            print(length)
+            println(" failed")
+            False
+        }
+    }
+}
+
 fun randomized-eq (x: list<int>, y: seq<int>, cnt: int): <ndet, div> bool {
     if (cnt == 0)
-    then True
-    else match (random/srandom-int() % 8) {
+    then list-eq(x, y.list)
+    else match (random/srandom-int() % 9) {
         0 -> if (x.head !== y.head) then False else randomized-eq(x, y, cnt - 1)
         1 -> if (x.last !== y.last) then False else randomized-eq(x, y, cnt - 1)
         2 -> randomized-eq(x.tail, y.tail, cnt - 1)
@@ -43,6 +60,10 @@ fun randomized-eq (x: list<int>, y: seq<int>, cnt: int): <ndet, div> bool {
             randomized-eq(Cons(n, x), y.cons(n), cnt - 1)
         }
         6 -> if (!list-eq(x, y.list)) then False else randomized-eq(x, y, cnt - 1)
+        7 -> {
+            val index = 5000 + random/srandom-int() % (y.size + 1);
+            randomized-eq(x.split(index).fst, y.split(index).fst, cnt - 1)
+        }
         _ -> {
             val x' = random-list(100, Nil)
             val y' = x'.seq
@@ -63,11 +84,19 @@ fun main() {
         flag := False
         println("merge not equal")
     }
+
+    val split-test = random-list(500, Nil)
+    if ( !split-eq(501, split-test.seq, split-test) ) {
+        flag := False
+        println("split not equal")
+    }
+
     val test = random-list(10000, Nil)
     if ( !randomized-eq(test, test.seq, 20000) ) {
         flag := False
         println("randomized not equal")
     }
+
     if (flag)
     then println("success")
     else println("failure")

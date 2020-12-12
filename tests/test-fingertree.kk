@@ -116,6 +116,16 @@ fun main() {
         println("map not equal")
     }
 
+    if ( data.seq.foldl(0, (+)) != data.foldl(0, (+)) ) {
+        flag := False
+        println("foldl not equal")
+    }
+
+    if ( data.seq.foldr(0, (+)) != data.foldr(0, (+)) ) {
+        flag := False
+        println("foldr not equal")
+    }
+
     val split-test = random-list(500, Nil)
     if ( !split-eq(501, split-test.seq, split-test) ) {
         flag := False

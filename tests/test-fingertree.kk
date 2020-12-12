@@ -27,7 +27,7 @@ fun (!==)(a: maybe<int>, b: maybe<int>): bool {
 }
 
 fun split-eq(length: int, seq: seq<int>, l: list<int>): <console, div> bool {
-    if (length < 0)
+    if (length < -1)
     then True
     else {
         val seq-split = seq.split(length)

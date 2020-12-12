@@ -536,6 +536,8 @@ fun split'(tree: ntree<a>, index: int): div split<tree, node<a>> {
 fun split(seq: seq<a>, index: int) : div (seq<a>, seq<a>) {
     if (seq.tree.is-empty)
     then (new(), new())
+    elif (index <= 0)
+    then (new(), seq)
     elif (seq.tree.size <= index)
     then (seq, new())
     else match (seq.tree.split'(index)) {

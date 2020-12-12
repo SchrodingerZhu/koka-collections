@@ -479,6 +479,25 @@ fun split'(digit: ndigit<a>, index: int): split<digit, node<a>> {
     }
 }
 
+fun lookup(digit: ndigit<a>, index: int): maybe<(int, node<a>)> {
+    match (digit) {
+        One(x) -> Just((0, x))
+        Two(x, y) -> 
+            if (x.size > index) then Just((0, x))
+            else Just((x.size, y))
+        Three(x, y, z) -> 
+            if (x.size > index) then Just((0, x))
+            elif (x.size + y.size > index) then Just((x.size, y))
+            else Just((x.size + y.size, z))
+        Four(a, b, c, d) -> 
+            if (a.size > index) then Just((0, a))
+            elif (a.size + b.size > index) Just((a.size, b))
+            elif (a.size + b.size + c.size > index) Just((a.size + b.size, c))
+            else Just((a.size + b.size + c.size, d))
+        Zero -> Nothing
+    }
+}
+
 fun split'(node: node<node<a>>, index: int): split<digit, node<a>> {
     match (node) {
         Node1(_, x) -> Split(Zero, x, Zero)
@@ -490,6 +509,20 @@ fun split'(node: node<node<a>>, index: int): split<digit, node<a>> {
             if (x.size > index) then Split(Zero, x, Two(y, z))
             elif (x.size + y.size > index) then Split(One(x), y, One(z))
             else Split(Two(x, y), z, Zero)
+    }
+}
+
+fun lookup(node: node<node<a>>, index: int): maybe<(int, node<a>)> {
+    match (node) {
+        Node1(_, x) -> Just((0, x))
+        Node2(_, x, y) -> 
+            if ( x.size > index )
+            then Just((0, x))
+            else Just((x.size, y))
+        Node3(_, x, y, z) -> 
+            if (x.size > index) then Just((0, x))
+            elif (x.size + y.size > index) then Just((x.size, y))
+            else Just((x.size + y.size, z))
     }
 }
 
@@ -533,6 +566,30 @@ fun split'(tree: ntree<a>, index: int): div split<tree, node<a>> {
     } 
 }
 
+fun lookup(tree: ntree<a>, index: int): div maybe<(int, node<a>)> {
+    match (tree) {
+        Empty -> Nothing
+        Leaf(a) -> Just((0, a))
+        Deep(_, dl, t, dr) -> {
+            if (dl.size > index) then dl.lookup(index)
+            elif (dl.size + t.size > index) then {
+                match (t.lookup(index - dl.size)) {
+                    Nothing -> Nothing
+                    Just((cnt, m)) -> match (m.lookup(index - dl.size - cnt)) {
+                        Nothing -> Nothing
+                        Just((cnt', res)) -> Just((dl.size + cnt + cnt', res))
+                    }
+                }
+            }
+            else match (dr.lookup(index - dl.size - t.size)) {
+                Nothing -> Nothing
+                Just((cnt, res)) -> Just((cnt + dl.size + t.size, res))
+            }
+        }
+    } 
+}
+
+
 fun split(seq: seq<a>, index: int) : div (seq<a>, seq<a>) {
     if (seq.tree.is-empty)
     then (new(), new())
@@ -545,6 +602,21 @@ fun split(seq: seq<a>, index: int) : div (seq<a>, seq<a>) {
         _ -> (new(), new())
     }
 }
+
+fun at(seq: seq<a>, index: int) : div maybe<a> {
+    if (seq.tree.is-empty)
+    then Nothing
+    elif (index < 0)
+    then Nothing
+    elif (seq.tree.size <= index)
+    then Nothing
+    else match (seq.tree.lookup(index)) {
+        Just ((_, a)) -> Just (a.x)
+        _ -> Nothing
+    }
+}
+
+
 
 fun show(seq: seq<int>): string {
     "<" + seq.list.show + ">"

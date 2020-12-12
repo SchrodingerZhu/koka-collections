@@ -543,3 +543,15 @@ fun split(seq: seq<a>, index: int) : div (seq<a>, seq<a>) {
         _ -> (new(), new())
     }
 }
+
+fun show(seq: seq<int>): string {
+    "<" + seq.list.show + ">"
+}
+
+fun show(seq: seq<bool>): string {
+    "<" + seq.list.show + ">"
+}
+
+fun show(seq: seq<string>): string {
+    "<" + seq.list.show + ">"
+}

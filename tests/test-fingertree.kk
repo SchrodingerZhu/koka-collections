@@ -43,6 +43,20 @@ fun split-eq(length: int, seq: seq<int>, l: list<int>): <console, div> bool {
     }
 }
 
+fun lookup-eq(length: int, seq: seq<int>, l: list<int>): <console, div> bool {
+    if (length < 0)
+    then True
+    else {
+        if (l.list-at(length) !== seq.at(length)) 
+        then {
+            print("look up not eq at ")
+            length.println
+            False
+        }
+        else lookup-eq(length - 1, seq, l)
+    }
+}
+
 fun randomized-eq (x: list<int>, y: seq<int>, cnt: int): <ndet, div> bool {
     if (cnt == 0)
     then list-eq(x, y.list)
@@ -72,6 +86,10 @@ fun randomized-eq (x: list<int>, y: seq<int>, cnt: int): <ndet, div> bool {
     }
 }
 
+fun list-at(l: list<a>, index: int): maybe<a> { // index should not be larger than length
+    l.take(index + 1).last
+}
+
 fun main() {
     var flag := True
     val data = random-list(100000, Nil)
@@ -92,6 +110,10 @@ fun main() {
     }
 
     val test = random-list(10000, Nil)
+    if ( !lookup-eq(9999, test.seq, test) ) {
+        flag := False
+        println("lookup not equal")
+    }
     if ( !randomized-eq(test, test.seq, 20000) ) {
         flag := False
         println("randomized not equal")

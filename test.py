@@ -58,11 +58,11 @@ if __name__ == "__main__":
         test = TEST_DIR + "/" + "/".join(i[:-2]) + "test-" + i[-1]
         src  = test + ".kk"
         log.info("RUNNING {}".format(src))
-        res = run(["koka", *TEST_ARGS, "-e", src, "-v0"], stdout=PIPE, stderr=PIPE)
+        res = run(["koka", *TEST_ARGS, "-e", src, "-v0", "--console=raw"], stdout=PIPE, stderr=PIPE)
         out = res.stdout.strip()
         if b"success" not in out or res.returncode != 0:
             success = False
-            log.error("Failed with code: {}\noutput:\n{}\nstderr:\n {}".format(res.returncode, res.stdout.strip(), res.stderr.strip()))
+            log.error("Failed with code: {}\noutput:\n{}\nstderr:\n {}".format(res.returncode, res.stdout.strip().decode(), res.stderr.strip().decode()))
         else:
             log.info("-> SUCCESS")
     

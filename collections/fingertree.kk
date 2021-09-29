@@ -494,11 +494,12 @@ private fun split'(digit: ndigit<a>, index: int): split<digit, node<a>> {
         }
         Four(a, b, c, d) -> { 
             val asize = a.size
-            if (asize > index) { return Split(Zero, a, Three(b, c, d)) }
+            if (asize > index) then { return Split(Zero, a, Three(b, c, d)) }
             val absize = asize + b.size
-            return if (absize > index) Split(One(a), b, Two(c, d))
-            elif (absize + c.size > index) Split(Two(a, b), c, One(d))
-            else Split(Three(a, b, c), d, Zero)
+            return if (absize > index)
+                   then Split(One(a), b, Two(c, d))
+                   elif (absize + c.size > index) then Split(Two(a, b), c, One(d))
+                   else Split(Three(a, b, c), d, Zero)
         }
         Zero -> NotFound
     }
@@ -558,14 +559,14 @@ private fun split'(tree: ntree<a>, index: int): div split<tree, node<a>> {
         Leaf(a) -> Split(Empty, a, Empty)
         Deep(_, dl, t, dr) -> {
             val lsize = dl.size
-            if (lsize > index) {
+            if (lsize > index) then {
                 return match (dl.split'(index)) {
                     Split (l, a, r) -> Split (l.digit-to-tree, a, left-deep(r, t, dr))
                     _ -> NotFound
                 }
             }
             val ltsize = lsize + t.size
-            if (ltsize > index) {
+            if (ltsize > index) then {
                 return match (t.split'(index - lsize)) {
                     Split (tl, ta, tr) -> match (ta.split'(index - lsize - tl.size)) {
                         Split(l, a, r) -> Split (right-deep(dl, tl, l), a, left-deep(r, tr, dr))
@@ -625,15 +626,15 @@ fun lookup(digit: ndigit<a>, index: int): element<node<a>> {
     }
     Three(x, y, z) -> {
       val xn = x.size
-      if (xn > index) return Some(0, x)
+      if (xn > index) then return Some(0, x)
       val xyn = xn + y.size
       if (xyn > index) then Some(xn, y) else Some(xyn, z)
     }
     Four(x, y, z, d) -> {
       val xn = x.size
-      if (xn > index) return Some(0, x)
+      if (xn > index) then return Some(0, x)
       val xyn = xn + y.size
-      if (xyn > index) return Some(xn, y)
+      if (xyn > index) then return Some(xn, y)
       val n  = xyn + z.size
       if (n > index) then Some(xyn, z) else Some(n, d)
     }
@@ -670,7 +671,7 @@ fun lookup(tree: ntree<a>, index: int): element<node<a>> {
     Leaf(node) -> Some(0,node)
     Deep(_, dl, t, dr) -> {
       val ln = dl.size
-      if (ln > index) return dl.lookup(index)
+      if (ln > index) then return dl.lookup(index)
       val i  = index - ln
       val tn = t.size
       if (tn > i) then {
@@ -700,15 +701,15 @@ public fun at(seq: seq<a>, index: int) : maybe<a> {
 }
 
 public fun show(seq: seq<int>): string {
-    "<" + seq.list.show + ">"
+    "<" ++ seq.list.show ++ ">"
 }
 
 public fun show(seq: seq<bool>): string {
-    "<" + seq.list.show + ">"
+    "<" ++ seq.list.show ++ ">"
 }
 
 public fun show(seq: seq<string>): string {
-    "<" + seq.list.show + ">"
+    "<" ++ seq.list.show ++ ">"
 }
 
 public fun map(seq: seq<a>, f: a -> e b): e seq<b> {

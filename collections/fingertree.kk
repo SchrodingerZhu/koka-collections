@@ -486,36 +486,28 @@ private fun split'(digit: ndigit<a>, index: int): split<digit, node<a>> {
         Two(x, y) -> 
             if (x.size > index) then Split(Zero, x, One(y))
             else Split(One(x), y, Zero)
-        Three(x, y, z) -> 
-            if (x.size > index) then Split(Zero, x, Two(y, z))
-            elif (x.size + y.size > index) then Split(One(x), y, One(z))
+        Three(x, y, z) -> {
+            val xsize = x.size
+            if (xsize > index) then Split(Zero, x, Two(y, z))
+            elif (xsize + y.size > index) then Split(One(x), y, One(z))
             else Split(Two(x, y), z, Zero)
-        Four(a, b, c, d) -> 
-            if (a.size > index) then Split(Zero, a, Three(b, c, d))
-            elif (a.size + b.size > index) Split(One(a), b, Two(c, d))
-            elif (a.size + b.size + c.size > index) Split(Two(a, b), c, One(d))
-            else Split(Three(a, b, c), d, Zero)
+        }
+        Four(a, b, c, d) -> { 
+            val asize = a.size
+            if (asize > index) then { return Split(Zero, a, Three(b, c, d)) }
+            val absize = asize + b.size
+            return if (absize > index)
+                   then Split(One(a), b, Two(c, d))
+                   elif (absize + c.size > index) then Split(Two(a, b), c, One(d))
+                   else Split(Three(a, b, c), d, Zero)
+        }
         Zero -> NotFound
     }
 }
 
-private fun lookup(digit: ndigit<a>, index: int): maybe<(int, node<a>)> {
-    match (digit) {
-        One(x) -> Just((0, x))
-        Two(x, y) -> 
-            if (x.size > index) then Just((0, x))
-            else Just((x.size, y))
-        Three(x, y, z) -> 
-            if (x.size > index) then Just((0, x))
-            elif (x.size + y.size > index) then Just((x.size, y))
-            else Just((x.size + y.size, z))
-        Four(a, b, c, d) -> 
-            if (a.size > index) then Just((0, a))
-            elif (a.size + b.size > index) Just((a.size, b))
-            elif (a.size + b.size + c.size > index) Just((a.size + b.size, c))
-            else Just((a.size + b.size + c.size, d))
-        Zero -> Nothing
-    }
+type place<a> {
+    con Nowhere
+    con Found{shift: int; x: a}
 }
 
 private fun split'(node: node<node<a>>, index: int): split<digit, node<a>> {
@@ -525,24 +517,12 @@ private fun split'(node: node<node<a>>, index: int): split<digit, node<a>> {
             if ( x.size > index )
             then Split(Zero, x, One(y))
             else Split(One(x), y, Zero)
-        Node3(_, x, y, z) -> 
-            if (x.size > index) then Split(Zero, x, Two(y, z))
-            elif (x.size + y.size > index) then Split(One(x), y, One(z))
+        Node3(_, x, y, z) -> {
+            val xsize = x.size
+            if (xsize > index) then Split(Zero, x, Two(y, z))
+            elif (xsize + y.size > index) then Split(One(x), y, One(z))
             else Split(Two(x, y), z, Zero)
-    }
-}
-
-private fun lookup(node: node<node<a>>, index: int): maybe<(int, node<a>)> {
-    match (node) {
-        Node1(_, x) -> Just((0, x))
-        Node2(_, x, y) -> 
-            if ( x.size > index )
-            then Just((0, x))
-            else Just((x.size, y))
-        Node3(_, x, y, z) -> 
-            if (x.size > index) then Just((0, x))
-            elif (x.size + y.size > index) then Just((x.size, y))
-            else Just((x.size + y.size, z))
+        }
     }
 }
 
@@ -578,49 +558,26 @@ private fun split'(tree: ntree<a>, index: int): div split<tree, node<a>> {
         Empty -> NotFound
         Leaf(a) -> Split(Empty, a, Empty)
         Deep(_, dl, t, dr) -> {
-            if (dl.size > index) then {
-                match (dl.split'(index)) {
+            val lsize = dl.size
+            if (lsize > index) then {
+                return match (dl.split'(index)) {
                     Split (l, a, r) -> Split (l.digit-to-tree, a, left-deep(r, t, dr))
                     _ -> NotFound
                 }
             }
-            elif (dl.size + t.size > index) then {
-                match (t.split'(index - dl.size)) {
-                    Split (tl, ta, tr) -> match (ta.split'(index - dl.size - tl.size)) {
+            val ltsize = lsize + t.size
+            if (ltsize > index) then {
+                return match (t.split'(index - lsize)) {
+                    Split (tl, ta, tr) -> match (ta.split'(index - lsize - tl.size)) {
                         Split(l, a, r) -> Split (right-deep(dl, tl, l), a, left-deep(r, tr, dr))
                         _ -> NotFound
                     }   
                     _ -> NotFound
                 }
             }
-            else {
-                match (dr.split'(index - dl.size - t.size)) {
-                    Split (l, a, r) -> Split (right-deep(dl, t, l), a, r.digit-to-tree)
-                    _ -> NotFound
-                }
-            }
-        }
-    } 
-}
-
-private fun lookup(tree: ntree<a>, index: int): div maybe<(int, node<a>)> {
-    match (tree) {
-        Empty -> Nothing
-        Leaf(a) -> Just((0, a))
-        Deep(_, dl, t, dr) -> {
-            if (dl.size > index) then dl.lookup(index)
-            elif (dl.size + t.size > index) then {
-                match (t.lookup(index - dl.size)) {
-                    Nothing -> Nothing
-                    Just((cnt, m)) -> match (m.lookup(index - dl.size - cnt)) {
-                        Nothing -> Nothing
-                        Just((cnt', res)) -> Just((dl.size + cnt + cnt', res))
-                    }
-                }
-            }
-            else match (dr.lookup(index - dl.size - t.size)) {
-                Nothing -> Nothing
-                Just((cnt, res)) -> Just((cnt + dl.size + t.size, res))
+            return match (dr.split'(index - ltsize)) {
+                Split (l, a, r) -> Split (right-deep(dl, t, l), a, r.digit-to-tree)
+                _ -> NotFound
             }
         }
     } 
@@ -655,29 +612,104 @@ public fun split(seq: seq<a>, index: int) : div (seq<a>, seq<a>) {
     }
 }
 
-public fun at(seq: seq<a>, index: int) : div maybe<a> {
-    if (seq.tree.is-empty)
-    then Nothing
-    elif (index < 0)
-    then Nothing
-    elif (seq.tree.size <= index)
-    then Nothing
-    else match (seq.tree.lookup(index)) {
-        Just ((_, a)) -> Just (a.x)
-        _ -> Nothing
+type element<a> {
+  con None
+  con Some{ cnt : int; elem : a }
+}
+
+fun lookup(digit: ndigit<a>, index: int): element<node<a>> {
+  match (digit) {
+    One(x) -> Some(0,x)
+    Two(x, y) -> {
+      val xn = x.size
+      if (xn > index) then Some(0,x) else Some(xn, y)
     }
+    Three(x, y, z) -> {
+      val xn = x.size
+      if (xn > index) then return Some(0, x)
+      val xyn = xn + y.size
+      if (xyn > index) then Some(xn, y) else Some(xyn, z)
+    }
+    Four(x, y, z, d) -> {
+      val xn = x.size
+      if (xn > index) then return Some(0, x)
+      val xyn = xn + y.size
+      if (xyn > index) then return Some(xn, y)
+      val n  = xyn + z.size
+      if (n > index) then Some(xyn, z) else Some(n, d)
+    }
+    Zero -> None
+  }
+}
+
+fun lookup(node: node<node<a>>, index: int): element<node<a>> {
+  match (node) {
+    Node1(_, x) -> Some(0, x)
+    Node2(_, x, y) -> {
+      val xn = x.size
+      if ( xn > index ) then Some(0, x) else Some(xn, y)
+    }
+    Node3(_, x, y, z) -> {
+      val xn = x.size
+      if (xn > index) return Some(0, x)
+      val xyn = xn + y.size
+      if (xyn > index) then Some(xn, y) else Some(xyn, z)
+    }
+  }
+}
+
+fun add(e : element<a>, adjust : int): element<a> {
+  match (e) {
+    Some(cnt,x) -> Some(cnt+adjust,x)
+    _  -> None
+  }
+}
+
+fun lookup(tree: ntree<a>, index: int): element<node<a>> {
+  match (tree) {
+    Empty      -> None
+    Leaf(node) -> Some(0,node)
+    Deep(_, dl, t, dr) -> {
+      val ln = dl.size
+      if (ln > index) then return dl.lookup(index)
+      val i  = index - ln
+      val tn = t.size
+      if (tn > i) then {
+        match (t.lookup(i)) {
+          Some(cnt, node) -> {
+            val j = ln + cnt
+            node.lookup(index - j).add(j)
+          }
+          _ -> None
+        }
+      }
+      else {
+        val j = ln + tn 
+        dr.lookup(index - j).add(j) 
+      }
+    }
+  } 
+}
+
+public fun at(seq: seq<a>, index: int) : maybe<a> {
+  if (index.is-neg || seq.tree.size <= index) 
+    then Nothing 
+    else match (seq.tree.lookup(index)) {
+      Some(_, a) -> Just(a.x)
+      _          -> Nothing
+    }  
 }
 
 public fun show(seq: seq<int>): string {
-    "<" + seq.list.show + ">"
+    "<" ++ seq.list.show ++ ">"
 }
 
 public fun show(seq: seq<bool>): string {
-    "<" + seq.list.show + ">"
+    "<" ++ seq.list.show ++ ">"
 }
 
 public fun show(seq: seq<string>): string {
-    "<" + seq.list.show + ">"
+    "<" ++ seq.list.show ++ ">"
 }
 
 public fun map(seq: seq<a>, f: a -> e b): e seq<b> {
